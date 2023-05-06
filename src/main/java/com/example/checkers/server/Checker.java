@@ -1,6 +1,5 @@
-package com.example.checkers.Server;
+package com.example.checkers.server;
 
-import com.example.checkers.Client.Client;
 import javafx.scene.shape.Circle;
 
 public class Checker extends Circle {

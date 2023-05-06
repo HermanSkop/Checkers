@@ -8,17 +8,17 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="Content" prefHeight="545.0" prefWidth="430.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.checkers.ConnectController">
+<AnchorPane id="Content" prefHeight="397.0" prefWidth="430.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.checkers.CreateController">
    <TextField fx:id="address" layoutX="135.0" layoutY="150.0" promptText="localhost" text="localhost" />
    <Label layoutX="135.0" layoutY="124.0" text="IP adress" />
    <Label layoutX="135.0" layoutY="184.0" text="Port" />
    <TextField fx:id="port" layoutX="135.0" layoutY="201.0" promptText="10122" text="10122" />
-   <Label layoutX="142.0" layoutY="47.0" text="Checkers">
+   <Label layoutX="59.0" layoutY="53.0" text="Create a new game">
       <font>
          <Font size="36.0" />
       </font>
    </Label>
-   <Button fx:id="connectButton" layoutX="183.0" layoutY="308.0" mnemonicParsing="false" onAction="#onConnectButton" text="connect" />
+   <Button fx:id="createButton" layoutX="176.0" layoutY="310.0" mnemonicParsing="false" onAction="#onCreateButton" prefHeight="26.0" prefWidth="66.0" text="create" />
    <RadioButton layoutX="182.0" layoutY="240.0" mnemonicParsing="false" selected="true" text="Red">
       <toggleGroup>
          <ToggleGroup fx:id="color" />

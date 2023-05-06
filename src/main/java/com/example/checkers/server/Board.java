@@ -1,6 +1,6 @@
-package com.example.checkers.Server;
+package com.example.checkers.server;
 
-import com.example.checkers.Client.Client;
+import com.example.checkers.client.Client;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -38,24 +38,26 @@ public class Board implements Serializable {
         return null;
     }
 
-    public boolean movePiece(Board board, int pieceRow, int pieceCol, int moveRow, int moveCol, Client.Color checker){
-        if(possibleMove(board, pieceRow, pieceCol, moveRow, moveCol, checker));
+    public boolean movePiece(int pieceRow, int pieceCol, int moveRow, int moveCol, Client.Color checker){
+        if(possibleMove(pieceRow, pieceCol, moveRow, moveCol, checker));
         return false;
     }
-    public boolean possibleMove(Board board, int pieceRow, int pieceCol, int moveRow, int moveCol, Client.Color checker){
+    public boolean possibleMove(int pieceRow, int pieceCol, int moveRow, int moveCol, Client.Color checker){
         int colDirection = checker== Client.Color.RED?1:-1;
         int rowDirection = moveRow-pieceRow;
         if(rowDirection!=1 && rowDirection!=-1) return false;
         if(moveCol-pieceCol!=colDirection || moveRow-pieceRow!=rowDirection) return false;
-        else if (board.getSquare(moveRow, moveCol).getChecker()!=null) return false;
-        else return true;
+        else return this.getSquare(moveRow, moveCol).getChecker() == null;
     }
-    public boolean possibleTake(Board board, int pieceRow, int pieceCol, int moveRow, int moveCol, Client.Color checker){
+    public boolean possibleTake(int pieceRow, int pieceCol, int moveRow, int moveCol, Client.Color checker){
         int colDirection = checker== Client.Color.RED?2:-2;
-        int rowDirection = moveRow-pieceRow; // can be 1 or -1
+        int rowDirection = moveRow-pieceRow; // can be 2 or -2
+        if(rowDirection!=2 && rowDirection!=-2) return false;
         if(moveCol-pieceCol!=colDirection || moveRow-pieceRow!=rowDirection) return false;
-        else if (board.getSquare(moveRow, moveCol).getChecker()!=null) return false;
-        else if (board.getSquare(moveRow-rowDirection, moveCol-colDirection).getChecker()==null) return false;
+        else if (this.getSquare(moveRow, moveCol).getChecker()!=null) return false;
+        else if (this.getSquare(moveRow-rowDirection/2, moveCol-colDirection/2)!=null &&
+                (this.getSquare(moveRow-rowDirection/2, moveCol-colDirection/2).getChecker()==null ||
+                this.getSquare(moveRow-rowDirection/2, moveCol-colDirection/2).getChecker()==checker)) return false;
         else return true;
     }
 }

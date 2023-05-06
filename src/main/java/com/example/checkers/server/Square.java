@@ -1,7 +1,6 @@
-package com.example.checkers.Server;
+package com.example.checkers.server;
 
-import com.example.checkers.Client.Client;
-import javafx.scene.layout.Pane;
+import com.example.checkers.client.Client;
 import javafx.scene.layout.StackPane;
 
 import java.io.Serializable;

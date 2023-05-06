@@ -1,4 +1,4 @@
-package com.example.checkers.Client;
+package com.example.checkers.client;
 
 import java.io.Serializable;
 
