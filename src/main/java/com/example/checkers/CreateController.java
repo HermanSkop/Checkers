@@ -12,8 +12,10 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.rmi.AlreadyBoundException;
+import java.rmi.NotBoundException;
 import java.util.Objects;
 
 public class CreateController extends Controller{
@@ -23,7 +25,7 @@ public class CreateController extends Controller{
     @FXML
     Button createButton;
     @FXML
-    public void onCreateButton(ActionEvent actionEvent) throws AlreadyBoundException, IOException {
+    public void onCreateButton() throws IOException {
         RadioButton radioButton = (RadioButton) color.getSelectedToggle();
 
         Client.Color hostColor = Objects.equals(radioButton.getText(), "Red")? Client.Color.RED : Client.Color.BLUE;
@@ -55,5 +57,9 @@ public class CreateController extends Controller{
             Platform.exit();
         });
         stage.show();
+    }
+    @FXML
+    public void initialize() throws UnknownHostException {
+        address.setText(InetAddress.getLocalHost().getHostAddress());
     }
 }

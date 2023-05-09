@@ -54,16 +54,38 @@ public class Board implements Serializable {
         }
         return false;
     }
+    public boolean takePiece(int pieceRow, int pieceCol, int moveRow, int moveCol){
+        Square squareTo = getSquare(moveRow, moveCol);
+        Square squareFrom = getSquare(pieceRow, pieceCol);
+        int colDirection = getColDirection(squareFrom.getChecker())*2;
+        int rowDirection = getRowDirection(pieceRow, moveRow);
+        Square takeSquare = getSquare(moveRow-rowDirection/2, moveCol-colDirection/2);
+        if(possibleTake(pieceRow, pieceCol, moveRow, moveCol, squareFrom.getChecker())){
+            squareTo.setChecker(squareFrom.getChecker());
+            takeSquare.setChecker(null);
+            squareFrom.setChecker(null);
+
+            int iTo = getIndexOfSquare(moveRow, moveCol);
+            int iFrom = getIndexOfSquare(pieceRow, pieceCol);
+            int iTake = getIndexOfSquare(moveRow-rowDirection/2, moveCol-colDirection/2);
+
+            field.set(iTo, squareTo);
+            field.set(iFrom, squareFrom);
+            field.set(iTake, takeSquare);
+            return true;
+        }
+        return false;
+    }
     public boolean possibleMove(int pieceRow, int pieceCol, int moveRow, int moveCol, Client.Color checker){
-        int colDirection = checker== Client.Color.RED?1:-1;
-        int rowDirection = moveRow-pieceRow;
+        int colDirection = getColDirection(checker);
+        int rowDirection = getRowDirection(pieceRow, moveRow) ;
         if(rowDirection!=1 && rowDirection!=-1) return false;
         if(moveCol-pieceCol!=colDirection || moveRow-pieceRow!=rowDirection) return false;
         else return this.getSquare(moveRow, moveCol).getChecker() == null;
     }
     public boolean possibleTake(int pieceRow, int pieceCol, int moveRow, int moveCol, Client.Color checker){
-        int colDirection = checker== Client.Color.RED?2:-2;
-        int rowDirection = moveRow-pieceRow; // can be 2 or -2
+        int colDirection = getColDirection(checker)*2;
+        int rowDirection = getRowDirection(pieceRow, moveRow);
         if(rowDirection!=2 && rowDirection!=-2) return false;
         if(moveCol-pieceCol!=colDirection || moveRow-pieceRow!=rowDirection) return false;
         else if (this.getSquare(moveRow, moveCol).getChecker()!=null) return false;
@@ -72,11 +94,33 @@ public class Board implements Serializable {
                 this.getSquare(moveRow-rowDirection/2, moveCol-colDirection/2).getChecker()==checker)) return false;
         else return true;
     }
-
+    public static int getRowDirection(int moveFrom, int moveTo){
+        return moveTo-moveFrom;
+    }
+    public static int getColDirection(Client.Color checker){
+        return checker==Client.Color.RED?1:-1;
+    }
     private int getIndexOfSquare(int row, int col){
         for(Square square:field){
             if(square.getRow()==row && square.getColumn()==col) return field.indexOf(square);
         }
         return -1;
+    }
+
+    public boolean hasTake(Client.Color color){
+        for(Square square:field)
+            if (square.getChecker()==color)
+                for (int row = 0; row<8; row++)
+                    for (int col = 0; col<8; col++)
+                        if (possibleTake(square.getRow(), square.getColumn(), row, col, color)) return true;
+        return false;
+    }
+
+    public int getPiecesNumber(Client.Color color) {
+        int n = 0;
+        for(Square square:field)
+            if (square.getChecker()==color)
+                n++;
+        return n;
     }
 }

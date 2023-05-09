@@ -9,7 +9,7 @@
 <?import javafx.scene.text.Font?>
 
 <AnchorPane id="Content" prefHeight="397.0" prefWidth="430.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.checkers.CreateController">
-   <TextField fx:id="address" layoutX="135.0" layoutY="150.0" promptText="localhost" text="localhost" />
+   <TextField fx:id="address" disable="true" layoutX="135.0" layoutY="150.0" promptText="localhost" text="localhost" />
    <Label layoutX="135.0" layoutY="124.0" text="IP adress" />
    <Label layoutX="135.0" layoutY="184.0" text="Port" />
    <TextField fx:id="port" layoutX="135.0" layoutY="201.0" promptText="10122" text="10122" />

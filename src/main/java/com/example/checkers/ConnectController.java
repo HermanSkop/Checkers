@@ -22,7 +22,7 @@ public class ConnectController extends Controller{
     public TextField port;
     public Button connectButton;
 
-    public void onConnectButton(ActionEvent actionEvent) {
+    public void onConnectButton() {
         Client.Color host;
         try {
             Registry reg = LocateRegistry.getRegistry();
@@ -57,7 +57,7 @@ public class ConnectController extends Controller{
 
             stage.show();
         } catch (NotBoundException | IOException e) {
-            showError("This game doesnt exist!");
+            showError("This game doesnt exist!", "Error");
         }
     }
 }

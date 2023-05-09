@@ -11,9 +11,9 @@ import javafx.stage.Stage;
 import java.util.Objects;
 
 public abstract class Controller {
-    public void showError(String errorMessage) {
+    public void showError(String errorMessage, String title) {
         Stage errorStage = new Stage();
-        errorStage.setTitle("Error");
+        errorStage.setTitle(title);
 
         Label messageLabel = new Label(errorMessage);
 
@@ -29,7 +29,6 @@ public abstract class Controller {
         errorStage.show();
     }
     public static Client.Color getColor(Stage stage){
-        System.out.println(stage.getUserData());
         return Objects.equals(stage.getUserData(), "RED")? Client.Color.RED: Client.Color.BLUE;
     }
 }

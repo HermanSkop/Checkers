@@ -22,7 +22,7 @@ public class MainController extends Controller{
     }
     @FXML
     public void create(ActionEvent actionEvent) throws IOException {
-        replaceScene(createButton, "pages/create.fxml");
+        replaceScene(createButton, "pages/connect.fxml");
     }
 
     private void replaceScene(Button createButton, String fileName) throws IOException {

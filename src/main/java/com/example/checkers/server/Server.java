@@ -11,6 +11,7 @@ import java.rmi.server.UnicastRemoteObject;
 
 public class Server extends Thread implements IPlayable {
     private boolean isRunning = false;
+    private Client.Color winner;
     private int move = 0;
     private String ip;
     private int port;
@@ -41,14 +42,29 @@ public class Server extends Thread implements IPlayable {
 
     @Override
     public boolean move(Square squareFrom, Square squareTo) throws RemoteException {
-        if(board.movePiece(squareFrom.getRow(), squareFrom.getColumn(), squareTo.getRow(), squareTo.getColumn())) {
+        if(board.takePiece(squareFrom.getRow(), squareFrom.getColumn(), squareTo.getRow(), squareTo.getColumn())) {
+            pass();
+            return true;
+        }
+        else if (!board.hasTake(squareFrom.getChecker()) && board.movePiece(squareFrom.getRow(), squareFrom.getColumn(), squareTo.getRow(), squareTo.getColumn())) {
             pass();
             return true;
         }
         else return false;
     }
-    private void pass(){
-        currentPlayer = currentPlayer==Client.Color.RED?Client.Color.BLUE:Client.Color.RED;
+
+    @Override
+    public Client.Color getWinner() throws RemoteException {
+        return winner;
+    }
+
+    private void pass() {
+        Client.Color enemy = currentPlayer==Client.Color.RED?Client.Color.BLUE:Client.Color.RED;
+        if (board.getPiecesNumber(currentPlayer)<=0)
+            finishGame(enemy);
+        else if (board.getPiecesNumber(enemy)<=0)
+            finishGame(currentPlayer);
+        currentPlayer = enemy;
         move++;
     }
     @Override
@@ -61,7 +77,7 @@ public class Server extends Thread implements IPlayable {
 
             while (isRunning) {}
 
-            UnicastRemoteObject.unexportObject(this, true); // stop the server
+            UnicastRemoteObject.unexportObject(this, true);
 
         } catch (RemoteException | AlreadyBoundException e) {
             e.printStackTrace();
@@ -74,5 +90,10 @@ public class Server extends Thread implements IPlayable {
     @Override
     public int getMove() {
         return move;
+    }
+
+    @Override
+    public void finishGame(Client.Color winner){
+        this.winner = winner;
     }
 }
