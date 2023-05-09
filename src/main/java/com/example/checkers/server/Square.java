@@ -6,11 +6,11 @@ import javafx.scene.layout.StackPane;
 import java.io.Serializable;
 
 public class Square extends StackPane implements Serializable {
-    int row;
-    int column;
+    private int row;
+    private int column;
 
     Client.Color checker;
-    Client.Color color;
+    private final Client.Color color;
 
     public Square(int column, int row, Client.Color color, Client.Color checker) {
         this.row = row;
@@ -52,5 +52,9 @@ public class Square extends StackPane implements Serializable {
 
     public Client.Color getColor() {
         return color;
+    }
+
+    public void setChecker(Client.Color checker) {
+        this.checker = checker;
     }
 }

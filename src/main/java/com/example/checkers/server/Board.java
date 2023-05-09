@@ -34,12 +34,24 @@ public class Board implements Serializable {
     }
 
     public Square getSquare(int row, int col){
-        for (Square square:field) if(square.row==row && square.column==col) return square;
+        for (Square square:field) if(square.getRow()==row && square.getColumn()==col) return square;
         return null;
     }
 
-    public boolean movePiece(int pieceRow, int pieceCol, int moveRow, int moveCol, Client.Color checker){
-        if(possibleMove(pieceRow, pieceCol, moveRow, moveCol, checker));
+    public boolean movePiece(int pieceRow, int pieceCol, int moveRow, int moveCol){
+        Square squareTo = getSquare(moveRow, moveCol);
+        Square squareFrom = getSquare(pieceRow, pieceCol);
+        if(possibleMove(pieceRow, pieceCol, moveRow, moveCol, squareFrom.getChecker())){
+            int iTo = getIndexOfSquare(moveRow, moveCol);
+            int iFrom = getIndexOfSquare(pieceRow, pieceCol);
+
+            squareTo.setChecker(squareFrom.getChecker());
+            squareFrom.setChecker(null);
+
+            field.set(iTo, squareTo);
+            field.set(iFrom, squareFrom);
+            return true;
+        }
         return false;
     }
     public boolean possibleMove(int pieceRow, int pieceCol, int moveRow, int moveCol, Client.Color checker){
@@ -59,5 +71,12 @@ public class Board implements Serializable {
                 (this.getSquare(moveRow-rowDirection/2, moveCol-colDirection/2).getChecker()==null ||
                 this.getSquare(moveRow-rowDirection/2, moveCol-colDirection/2).getChecker()==checker)) return false;
         else return true;
+    }
+
+    private int getIndexOfSquare(int row, int col){
+        for(Square square:field){
+            if(square.getRow()==row && square.getColumn()==col) return field.indexOf(square);
+        }
+        return -1;
     }
 }

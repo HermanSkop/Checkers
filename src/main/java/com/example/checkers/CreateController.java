@@ -1,6 +1,7 @@
 package com.example.checkers;
 
 import com.example.checkers.client.Client;
+import com.example.checkers.client.UIBoardController;
 import com.example.checkers.server.Server;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;

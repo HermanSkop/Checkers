@@ -10,8 +10,8 @@ import java.rmi.server.UnicastRemoteObject;
 
 
 public class Server extends Thread implements IPlayable {
-    private boolean isRunning = true;
-
+    private boolean isRunning = false;
+    private int move = 0;
     private String ip;
     private int port;
     private Client.Color hostColor;
@@ -20,7 +20,7 @@ public class Server extends Thread implements IPlayable {
 
     private Board board = new Board();
 
-    public Server(String ip, int port, Client.Color hostColor) throws RemoteException, AlreadyBoundException {
+    public Server(String ip, int port, Client.Color hostColor) throws RemoteException {
         this.ip = ip;
         this.port = port;
         this.hostColor = hostColor;
@@ -40,8 +40,21 @@ public class Server extends Thread implements IPlayable {
     }
 
     @Override
+    public boolean move(Square squareFrom, Square squareTo) throws RemoteException {
+        if(board.movePiece(squareFrom.getRow(), squareFrom.getColumn(), squareTo.getRow(), squareTo.getColumn())) {
+            pass();
+            return true;
+        }
+        else return false;
+    }
+    private void pass(){
+        currentPlayer = currentPlayer==Client.Color.RED?Client.Color.BLUE:Client.Color.RED;
+        move++;
+    }
+    @Override
     public void run() {
         try {
+            isRunning = true;
             IPlayable server = (IPlayable) UnicastRemoteObject.exportObject(this, 0);
             Registry reg = LocateRegistry.createRegistry(1099);
             reg.bind("IPlayable", server);
@@ -57,5 +70,9 @@ public class Server extends Thread implements IPlayable {
     }
     public void interrupt() {
         isRunning = false;
+    }
+    @Override
+    public int getMove() {
+        return move;
     }
 }

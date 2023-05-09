@@ -1,16 +1,12 @@
-package com.example.checkers;
+package com.example.checkers.client;
 
 import com.example.checkers.Controller;
-import com.example.checkers.client.Client;
 import com.example.checkers.server.*;
-import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -25,21 +21,49 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
-public class UIBoardController{
+public class UIBoardController extends Thread{
     @FXML
     public GridPane gridPane;
     public IPlayable server;
     public Client.Color user;
     public Stage stage;
+    private Square selected;
+    private boolean isRunning = false;
 
     @FXML
     public void initialize() throws IOException, NotBoundException {
         Registry reg = LocateRegistry.getRegistry();
         server = (IPlayable) reg.lookup("IPlayable");
-        Board board = server.getBoard();
-
-        drawField(board);
+        startUpdatingField();
     }
+
+    private void startUpdatingField() {
+        Task<Void> updateField = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                isRunning = true;
+                int move = -1;
+                while (isRunning){
+                    Thread.sleep(100);
+                    if(move!=server.getMove()) {
+                        Platform.runLater(() -> {
+                            try {
+                                drawField(server.getBoard());
+                            } catch (RemoteException e) {
+                                throw new RuntimeException(e);
+                            }
+                        });
+                        move = server.getMove();
+                    }
+                }
+                return null;
+            }
+        };
+
+        Thread thread = new Thread(updateField);
+        thread.start();
+    }
+
 
     @FXML
     public void onShown(WindowEvent windowEvent) throws UnknownHostException {
@@ -48,24 +72,38 @@ public class UIBoardController{
         System.out.println("IP address: " + InetAddress.getLocalHost().getHostAddress());
         System.out.println("Color: " + user);
     }
-    private void drawField(Board board){
+    private void drawField(Board board) {
+        selected = null;
         gridPane.getChildren().clear();
-        for (Square square:board.getField()) {
-            square.setStyle(square.getColor()== Client.Color.WHITE ?"-fx-background-color: white":"-fx-background-color: black;");
-            if(square.getChecker()!=null) setChecker(square);
-            else square.setOnMouseClicked(event -> {
-                dropSelections();
-            });
+        for (Square square : board.getField()) {
+            square.setStyle(square.getColor() == Client.Color.WHITE ? "-fx-background-color: white" : "-fx-background-color: black;");
+            if (square.getChecker() != null) setChecker(square);
+            else
+                square.setOnMouseClicked(event -> {
+                    try {
+                        performMove(selected, square);
+                    } catch (RemoteException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
             gridPane.add(square, square.getColumn(), square.getRow());
         }
     }
+    private void performMove(Square from, Square to) throws RemoteException {
+        if(!server.move(from, to)){drawField(server.getBoard());}
+    }
+
     private void setChecker(Square square){
         Checker checker = new Checker(square.getRow(), square.getColumn());
         checker.setRadius(30);
         checker.setFill(square.getChecker()==Client.Color.RED?Color.RED:Color.BLUE);
 
         checker.setOnMouseClicked(event -> {
-            dropSelections();
+            try {
+                drawField(server.getBoard());
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
             try {
                 showPossibleMoves(square);
             } catch (RemoteException e) {
@@ -78,6 +116,7 @@ public class UIBoardController{
     }
 
     private void dropSelections(){
+        selected = null;
         for (Node node: gridPane.getChildren()){
             Square square = (Square) node;
             square.setStyle(square.getColor()== Client.Color.WHITE ?"-fx-background-color: white":"-fx-background-color: black;");
@@ -96,6 +135,7 @@ public class UIBoardController{
         Checker selectedChecker = (Checker) square.getChildren().get(0);
         if(server.getCurrentPlayer()!=square.getChecker()) return;
 
+        selected = square;
         selectedChecker.setFill(Color.ORANGE);
         for(Node moveNode:gridPane.getChildren()){
             Square moveSquare = (Square) moveNode;
@@ -107,8 +147,26 @@ public class UIBoardController{
             }
         }
     }
-    private void move(Board board, StackPane pane, Client.Color currPlayer){
-       // TODO perform move
+
+    @Override
+    public void run() {
+        isRunning = true;
+        while (isRunning){
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            try {
+                drawField(server.getBoard());
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
+    public void interrupt() {
+        isRunning = false;
+    }
+
 }
 

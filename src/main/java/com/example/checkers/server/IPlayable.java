@@ -9,4 +9,6 @@ public interface IPlayable extends Remote {
     Board getBoard() throws RemoteException;
     Client.Color getCurrentPlayer() throws RemoteException;
     Client.Color getHostColor() throws RemoteException;
+    boolean move(Square squareFrom, Square squareTo) throws RemoteException;
+    int getMove() throws RemoteException;
 }
