@@ -39,7 +39,7 @@ public class CreateController extends Controller{
         FXMLLoader fxmlLoader = new FXMLLoader(CreateApplication.class.getResource("pages/board.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 650, 650);
 
-        stage.setTitle("Your color: " + hostColor);
+        stage.setTitle("Your color: " + hostColor + " | IP: " + address.getText() + " | port:" + port.getText());
         stage.setResizable(false);
         stage.setScene(scene);
         stage.setUserData(hostColor.toString());

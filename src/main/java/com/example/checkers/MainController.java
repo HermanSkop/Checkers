@@ -18,11 +18,11 @@ public class MainController extends Controller{
 
     @FXML
     public void join(ActionEvent actionEvent) throws IOException {
-        replaceScene(joinButton, "pages/create.fxml");
+        replaceScene(joinButton, "pages/connect.fxml");
     }
     @FXML
     public void create(ActionEvent actionEvent) throws IOException {
-        replaceScene(createButton, "pages/connect.fxml");
+        replaceScene(createButton, "pages/create.fxml");
     }
 
     private void replaceScene(Button createButton, String fileName) throws IOException {

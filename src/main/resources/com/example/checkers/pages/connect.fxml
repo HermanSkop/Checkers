@@ -12,7 +12,7 @@
    <TextField fx:id="address" layoutX="117.0" layoutY="124.0" promptText="localhost" text="localhost"/>
    <Label layoutX="117.0" layoutY="98.0" text="IP adress"/>
    <Label layoutX="117.0" layoutY="158.0" text="Port"/>
-   <TextField fx:id="port" layoutX="117.0" layoutY="175.0" promptText="10122" text="10122"/>
+   <TextField fx:id="port" layoutX="117.0" layoutY="175.0" promptText="1099" text="1099"/>
    <Button fx:id="connectButton" layoutX="162.0" layoutY="223.0" mnemonicParsing="false" onAction="#onConnectButton"
            text="connect"/>
    <Label layoutX="34.0" layoutY="26.0" text="Connect to the game">

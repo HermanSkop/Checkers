@@ -25,7 +25,7 @@ public class ConnectController extends Controller{
     public void onConnectButton() {
         Client.Color host;
         try {
-            Registry reg = LocateRegistry.getRegistry();
+            Registry reg = LocateRegistry.getRegistry(address.getText(), Integer.parseInt(port.getText()));
             IPlayable server = (IPlayable) reg.lookup("IPlayable");
             host = server.getHostColor();
 
@@ -37,8 +37,8 @@ public class ConnectController extends Controller{
             FXMLLoader fxmlLoader = new FXMLLoader(CreateApplication.class.getResource("pages/board.fxml"));
 
             Scene scene = new Scene(fxmlLoader.load(), 650, 650);
-
-            stage.setTitle("Your color: " + (host==Client.Color.RED?Client.Color.BLUE:Client.Color.RED));
+            stage.setTitle("Your color: " + (host==Client.Color.RED?Client.Color.BLUE:Client.Color.RED) + " | IP: "
+                    + address.getText() + " | port:" + port.getText());
             stage.setUserData(host==Client.Color.RED?Client.Color.BLUE.toString():Client.Color.RED.toString());
             stage.setResizable(false);
             stage.setScene(scene);

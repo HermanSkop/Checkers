@@ -26,6 +26,7 @@ public abstract class Controller {
 
         Scene errorScene = new Scene(layout, 300, 100);
         errorStage.setScene(errorScene);
+        errorStage.setResizable(false);
         errorStage.show();
     }
     public static Client.Color getColor(Stage stage){

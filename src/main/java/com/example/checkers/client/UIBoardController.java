@@ -82,8 +82,6 @@ public class UIBoardController extends Controller{
     public void onShown(WindowEvent windowEvent) throws UnknownHostException {
         stage = (Stage) windowEvent.getSource();
         user = Controller.getColor(stage);
-        System.out.println("IP address: " + InetAddress.getLocalHost().getHostAddress());
-        System.out.println("Color: " + user);
     }
     private void drawField(Board board) {
         selected = null;
