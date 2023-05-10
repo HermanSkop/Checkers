@@ -9,6 +9,9 @@ public class Client implements Serializable {
         WHITE,
         BLACK
     }
-
+    public enum Type{
+        MAN,
+        KING
+    }
 
 }

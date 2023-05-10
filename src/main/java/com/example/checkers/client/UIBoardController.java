@@ -1,7 +1,6 @@
 package com.example.checkers.client;
 
 import com.example.checkers.Controller;
-import com.example.checkers.MainApplication;
 import com.example.checkers.server.*;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -95,16 +94,21 @@ public class UIBoardController extends Controller{
             else
                 square.setOnMouseClicked(event -> {
                     try {
-                        if(selected!=null)performMove(selected, square);
+                        if(selected != null)performMove(selected, square);
                     } catch (RemoteException e) {
                         throw new RuntimeException(e);
                     }
                 });
-            gridPane.add(square, square.getColumn(), square.getRow());
+            try {
+                gridPane.add(square, square.getColumn(), square.getRow());
+            }
+            catch (IllegalArgumentException e){
+                System.out.println(e);
+            }
         }
     }
     private void performMove(Square from, Square to) throws RemoteException {
-        if(!server.move(from, to)){drawField(server.getBoard());}
+        if(!server.performMove(from, to)){drawField(server.getBoard());}
     }
 
     private void endGame(Client.Color winner) {
@@ -144,16 +148,17 @@ public class UIBoardController extends Controller{
         if(server.getCurrentPlayer()!=square.getChecker()) return;
 
         selected = square;
-        selectedChecker.setFill(Color.ORANGE);
         for(Node moveNode:gridPane.getChildren()){
             Square moveSquare = (Square) moveNode;
-            if(board.possibleTake(selectedChecker.getRow(), selectedChecker.getCol(), moveSquare.getRow(), moveSquare.getColumn(), board.getSquare(selectedChecker.getRow(), selectedChecker.getCol()).getChecker()))
+            if(board.possibleTake(selectedChecker.getRow(), selectedChecker.getCol(), moveSquare.getRow(),
+                    moveSquare.getColumn(), board.getSquare(selectedChecker.getRow(), selectedChecker.getCol()),
+                    server.getLastTake()))
                 moveSquare.setStyle("-fx-background-color: #be9570");
         }
-        if(!board.hasTake(square.getChecker()))
+        if(!board.hasTake(square.getChecker(), server.getLastTake()))
             for(Node moveNode:gridPane.getChildren()){
                 Square moveSquare = (Square) moveNode;
-                if(board.possibleMove(selectedChecker.getRow(), selectedChecker.getCol(), moveSquare.getRow(), moveSquare.getColumn(), board.getSquare(selectedChecker.getRow(), selectedChecker.getCol()).getChecker())){
+                if(board.possibleMove(selectedChecker.getRow(), selectedChecker.getCol(), moveSquare.getRow(), moveSquare.getColumn(), board.getSquare(selectedChecker.getRow(), selectedChecker.getCol()))){
                     moveSquare.setStyle("-fx-background-color: #be9570");
                 }
             }

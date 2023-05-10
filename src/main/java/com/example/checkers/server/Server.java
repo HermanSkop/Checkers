@@ -16,6 +16,7 @@ public class Server extends Thread implements IPlayable {
     private String ip;
     private int port;
     private Client.Color hostColor;
+    private Square lastTake;
 
     private Client.Color currentPlayer = Client.Color.RED;
 
@@ -41,13 +42,17 @@ public class Server extends Thread implements IPlayable {
     }
 
     @Override
-    public boolean move(Square squareFrom, Square squareTo) throws RemoteException {
-        if(board.takePiece(squareFrom.getRow(), squareFrom.getColumn(), squareTo.getRow(), squareTo.getColumn())) {
-            pass();
+    public boolean performMove(Square squareFrom, Square squareTo) throws RemoteException {
+        if(board.takePiece(squareFrom.getRow(), squareFrom.getColumn(), squareTo.getRow(), squareTo.getColumn(), lastTake)) {
+            lastTake = squareTo;
+            if(!board.canTake(squareTo.getRow(), squareTo.getColumn(), lastTake)) pass();
+            move++;
             return true;
         }
-        else if (!board.hasTake(squareFrom.getChecker()) && board.movePiece(squareFrom.getRow(), squareFrom.getColumn(), squareTo.getRow(), squareTo.getColumn())) {
+        else if (!board.hasTake(squareFrom.getChecker(), lastTake) && board.movePiece(squareFrom.getRow(), squareFrom.getColumn(), squareTo.getRow(), squareTo.getColumn())) {
+            if(squareTo.getColumn()==7||squareTo.getColumn()==0) makeKing(squareTo.getRow(), squareTo.getColumn());
             pass();
+            move++;
             return true;
         }
         else return false;
@@ -64,8 +69,8 @@ public class Server extends Thread implements IPlayable {
             finishGame(enemy);
         else if (board.getPiecesNumber(enemy)<=0)
             finishGame(currentPlayer);
+        setLastTake(null);
         currentPlayer = enemy;
-        move++;
     }
     @Override
     public void run() {
@@ -96,4 +101,15 @@ public class Server extends Thread implements IPlayable {
     public void finishGame(Client.Color winner){
         this.winner = winner;
     }
-}
+    @Override
+    public void makeKing(int row, int col){
+        board.getSquare(row, col).setType(Client.Type.KING);
+    }
+    @Override
+    public Square getLastTake() {
+        return lastTake;
+    }
+    @Override
+    public void setLastTake(Square lastTake) {
+        this.lastTake = lastTake;
+    }}

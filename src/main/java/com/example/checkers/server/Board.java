@@ -24,6 +24,7 @@ public class Board implements Serializable {
         }
     }
 
+
     @Override
     public String toString() {
         return field.toString().replace(",", "");
@@ -41,9 +42,14 @@ public class Board implements Serializable {
     public boolean movePiece(int pieceRow, int pieceCol, int moveRow, int moveCol){
         Square squareTo = getSquare(moveRow, moveCol);
         Square squareFrom = getSquare(pieceRow, pieceCol);
-        if(possibleMove(pieceRow, pieceCol, moveRow, moveCol, squareFrom.getChecker())){
+        if(possibleMove(pieceRow, pieceCol, moveRow, moveCol, squareFrom)){
             int iTo = getIndexOfSquare(moveRow, moveCol);
             int iFrom = getIndexOfSquare(pieceRow, pieceCol);
+
+            if(squareFrom.getType()== Client.Type.KING || squareTo.getColumn()==0 || squareTo.getColumn()==7) {
+                squareTo.setType(Client.Type.KING);
+                squareFrom.setType(Client.Type.MAN);
+            }
 
             squareTo.setChecker(squareFrom.getChecker());
             squareFrom.setChecker(null);
@@ -54,13 +60,18 @@ public class Board implements Serializable {
         }
         return false;
     }
-    public boolean takePiece(int pieceRow, int pieceCol, int moveRow, int moveCol){
+    public boolean takePiece(int pieceRow, int pieceCol, int moveRow, int moveCol, Square lastTake){
         Square squareTo = getSquare(moveRow, moveCol);
         Square squareFrom = getSquare(pieceRow, pieceCol);
         int colDirection = getColDirection(squareFrom.getChecker())*2;
+        if (getSquare(pieceRow, pieceCol).getType()==Client.Type.KING) colDirection = moveCol-pieceCol;
         int rowDirection = getRowDirection(pieceRow, moveRow);
         Square takeSquare = getSquare(moveRow-rowDirection/2, moveCol-colDirection/2);
-        if(possibleTake(pieceRow, pieceCol, moveRow, moveCol, squareFrom.getChecker())){
+        if(possibleTake(pieceRow, pieceCol, moveRow, moveCol, squareFrom, lastTake)){
+            if(squareFrom.getType()== Client.Type.KING || squareTo.getColumn()==0 || squareTo.getColumn()==7) {
+                squareTo.setType(Client.Type.KING);
+                squareFrom.setType(Client.Type.MAN);
+            }
             squareTo.setChecker(squareFrom.getChecker());
             takeSquare.setChecker(null);
             squareFrom.setChecker(null);
@@ -76,23 +87,33 @@ public class Board implements Serializable {
         }
         return false;
     }
-    public boolean possibleMove(int pieceRow, int pieceCol, int moveRow, int moveCol, Client.Color checker){
-        int colDirection = getColDirection(checker);
+    public boolean possibleMove(int pieceRow, int pieceCol, int moveRow, int moveCol, Square square){
+        int colDirection = getColDirection(square.getChecker());
         int rowDirection = getRowDirection(pieceRow, moveRow) ;
         if(rowDirection!=1 && rowDirection!=-1) return false;
-        if(moveCol-pieceCol!=colDirection || moveRow-pieceRow!=rowDirection) return false;
-        else return this.getSquare(moveRow, moveCol).getChecker() == null;
+        if (square.getType()== Client.Type.KING){
+            colDirection = moveCol-pieceCol;
+            if ((colDirection!=1 && colDirection!=-1) || moveRow - pieceRow != rowDirection) return false;
+        }
+        else if(moveCol-pieceCol!=colDirection || moveRow-pieceRow!=rowDirection) return false;
+        return this.getSquare(moveRow, moveCol).getChecker() == null;
     }
-    public boolean possibleTake(int pieceRow, int pieceCol, int moveRow, int moveCol, Client.Color checker){
-        int colDirection = getColDirection(checker)*2;
+    public boolean possibleTake(int pieceRow, int pieceCol, int moveRow, int moveCol, Square square, Square lastTake){
+        int colDirection = getColDirection(square.getChecker())*2;
         int rowDirection = getRowDirection(pieceRow, moveRow);
+        if(lastTake!=null) if (lastTake.getRow()!=pieceRow || lastTake.getColumn()!=pieceCol) return false;
         if(rowDirection!=2 && rowDirection!=-2) return false;
-        if(moveCol-pieceCol!=colDirection || moveRow-pieceRow!=rowDirection) return false;
-        else if (this.getSquare(moveRow, moveCol).getChecker()!=null) return false;
-        else if (this.getSquare(moveRow-rowDirection/2, moveCol-colDirection/2)!=null &&
-                (this.getSquare(moveRow-rowDirection/2, moveCol-colDirection/2).getChecker()==null ||
-                this.getSquare(moveRow-rowDirection/2, moveCol-colDirection/2).getChecker()==checker)) return false;
-        else return true;
+        if(square.getType()== Client.Type.KING){
+            colDirection = moveCol-pieceCol;
+            if ((colDirection!=2 && colDirection!=-2) || moveRow - pieceRow != rowDirection) return false;
+        }
+        else if (moveCol - pieceCol != colDirection || moveRow - pieceRow != rowDirection) return false;
+        if (this.getSquare(moveRow - rowDirection / 2, moveCol - colDirection / 2) != null &&
+                (this.getSquare(moveRow - rowDirection / 2, moveCol - colDirection / 2).getChecker() == null ||
+                        this.getSquare(moveRow - rowDirection / 2, moveCol - colDirection / 2).getChecker() == square.getChecker()))
+            return false;
+        if (this.getSquare(moveRow, moveCol).getChecker() != null) return false;
+        return true;
     }
     public static int getRowDirection(int moveFrom, int moveTo){
         return moveTo-moveFrom;
@@ -107,13 +128,20 @@ public class Board implements Serializable {
         return -1;
     }
 
-    public boolean hasTake(Client.Color color){
+    public boolean hasTake(Client.Color color, Square lastTake){
         for(Square square:field)
             if (square.getChecker()==color)
                 for (int row = 0; row<8; row++)
                     for (int col = 0; col<8; col++)
-                        if (possibleTake(square.getRow(), square.getColumn(), row, col, color)) return true;
+                        if (possibleTake(square.getRow(), square.getColumn(), row, col, square, lastTake)) return true;
         return false;
+    }
+    public boolean canTake(int pieceRow, int pieceCol, Square lastTake){
+        for (int row = 0; row<8; row++)
+            for (int col = 0; col<8; col++)
+                if (possibleTake(pieceRow, pieceCol, row, col, getSquare(pieceRow, pieceCol), lastTake))
+                    return true;
+        return false; // r1 c2
     }
 
     public int getPiecesNumber(Client.Color color) {
@@ -123,4 +151,5 @@ public class Board implements Serializable {
                 n++;
         return n;
     }
+
 }

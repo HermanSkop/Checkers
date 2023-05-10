@@ -9,7 +9,8 @@ public class Square extends StackPane implements Serializable {
     private int row;
     private int column;
 
-    Client.Color checker;
+    private Client.Color checker;
+    private Client.Type type = Client.Type.MAN;
     private final Client.Color color;
 
     public Square(int column, int row, Client.Color color, Client.Color checker) {
@@ -56,5 +57,13 @@ public class Square extends StackPane implements Serializable {
 
     public void setChecker(Client.Color checker) {
         this.checker = checker;
+    }
+
+    public void setType(Client.Type type) {
+        this.type = type;
+    }
+
+    public Client.Type getType() {
+        return type;
     }
 }
