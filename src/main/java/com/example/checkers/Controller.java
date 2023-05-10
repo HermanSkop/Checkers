@@ -1,6 +1,6 @@
 package com.example.checkers;
 
-import com.example.checkers.client.Client;
+import com.example.checkers.client.Properties;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -29,7 +29,7 @@ public abstract class Controller {
         errorStage.setResizable(false);
         errorStage.show();
     }
-    public static Client.Color getColor(Stage stage){
-        return Objects.equals(stage.getUserData(), "RED")? Client.Color.RED: Client.Color.BLUE;
+    public static Properties.Color getColor(Stage stage){
+        return Objects.equals(stage.getUserData(), "RED")? Properties.Color.RED: Properties.Color.BLUE;
     }
 }

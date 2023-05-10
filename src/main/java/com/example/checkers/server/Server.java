@@ -1,6 +1,6 @@
 package com.example.checkers.server;
 
-import com.example.checkers.client.Client;
+import com.example.checkers.client.Properties;
 
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
@@ -11,18 +11,18 @@ import java.rmi.server.UnicastRemoteObject;
 
 public class Server extends Thread implements IPlayable {
     private boolean isRunning = false;
-    private Client.Color winner;
+    private Properties.Color winner;
     private int move = 0;
-    private String ip;
-    private int port;
-    private Client.Color hostColor;
+    private final String ip;
+    private final int port;
+    private final Properties.Color hostColor;
     private Square lastTake;
 
-    private Client.Color currentPlayer = Client.Color.RED;
+    private Properties.Color currentPlayer = Properties.Color.RED;
 
-    private Board board = new Board();
+    private final Board board = new Board();
 
-    public Server(String ip, int port, Client.Color hostColor) throws RemoteException {
+    public Server(String ip, int port, Properties.Color hostColor) throws RemoteException {
         this.ip = ip;
         this.port = port;
         this.hostColor = hostColor;
@@ -32,12 +32,12 @@ public class Server extends Thread implements IPlayable {
     }
 
     @Override
-    public Client.Color getCurrentPlayer() throws RemoteException {
+    public Properties.Color getCurrentPlayer() throws RemoteException {
         return currentPlayer;
     }
 
     @Override
-    public Client.Color getHostColor() throws RemoteException {
+    public Properties.Color getHostColor() throws RemoteException {
         return hostColor;
     }
 
@@ -59,12 +59,12 @@ public class Server extends Thread implements IPlayable {
     }
 
     @Override
-    public Client.Color getWinner() throws RemoteException {
+    public Properties.Color getWinner() throws RemoteException {
         return winner;
     }
 
     private void pass() {
-        Client.Color enemy = currentPlayer==Client.Color.RED?Client.Color.BLUE:Client.Color.RED;
+        Properties.Color enemy = currentPlayer== Properties.Color.RED? Properties.Color.BLUE: Properties.Color.RED;
         if (board.getPiecesNumber(currentPlayer)<=0)
             finishGame(enemy);
         else if (board.getPiecesNumber(enemy)<=0)
@@ -98,12 +98,12 @@ public class Server extends Thread implements IPlayable {
     }
 
     @Override
-    public void finishGame(Client.Color winner){
+    public void finishGame(Properties.Color winner){
         this.winner = winner;
     }
     @Override
     public void makeKing(int row, int col){
-        board.getSquare(row, col).setType(Client.Type.KING);
+        board.getSquare(row, col).setType(Properties.Type.KING);
     }
     @Override
     public Square getLastTake() {

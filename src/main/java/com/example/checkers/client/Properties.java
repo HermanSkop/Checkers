@@ -2,7 +2,7 @@ package com.example.checkers.client;
 
 import java.io.Serializable;
 
-public class Client implements Serializable {
+public class Properties implements Serializable {
     public enum Color{
         RED,
         BLUE,

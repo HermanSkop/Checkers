@@ -1,26 +1,26 @@
 package com.example.checkers.server;
 
-import com.example.checkers.client.Client;
+import com.example.checkers.client.Properties;
 import javafx.scene.layout.StackPane;
 
 import java.io.Serializable;
 
 public class Square extends StackPane implements Serializable {
-    private int row;
-    private int column;
+    private final int row;
+    private final int column;
 
-    private Client.Color checker;
-    private Client.Type type = Client.Type.MAN;
-    private final Client.Color color;
+    private Properties.Color checker;
+    private Properties.Type type = Properties.Type.MAN;
+    private final Properties.Color color;
 
-    public Square(int column, int row, Client.Color color, Client.Color checker) {
+    public Square(int column, int row, Properties.Color color, Properties.Color checker) {
         this.row = row;
         this.column = column;
         this.checker = checker;
         this.color = color;
     }
 
-    public Square(int column, int row, Client.Color color) {
+    public Square(int column, int row, Properties.Color color) {
         this.row = row;
         this.column = column;
         this.checker = null;
@@ -30,11 +30,11 @@ public class Square extends StackPane implements Serializable {
     @Override
     public String toString() {
         if(column==8) {
-            if (color == Client.Color.RED) return "#\n";
+            if (color == Properties.Color.RED) return "#\n";
             else return " \n";
         }
         else {
-            if (color == Client.Color.RED) return "#";
+            if (color == Properties.Color.RED) return "#";
             else return " ";
         }
     }
@@ -47,23 +47,23 @@ public class Square extends StackPane implements Serializable {
         return column;
     }
 
-    public Client.Color getChecker() {
+    public Properties.Color getChecker() {
         return checker;
     }
 
-    public Client.Color getColor() {
+    public Properties.Color getColor() {
         return color;
     }
 
-    public void setChecker(Client.Color checker) {
+    public void setChecker(Properties.Color checker) {
         this.checker = checker;
     }
 
-    public void setType(Client.Type type) {
+    public void setType(Properties.Type type) {
         this.type = type;
     }
 
-    public Client.Type getType() {
+    public Properties.Type getType() {
         return type;
     }
 }

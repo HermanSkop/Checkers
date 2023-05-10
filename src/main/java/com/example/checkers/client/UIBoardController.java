@@ -1,7 +1,10 @@
 package com.example.checkers.client;
 
 import com.example.checkers.Controller;
-import com.example.checkers.server.*;
+import com.example.checkers.server.Board;
+import com.example.checkers.server.Checker;
+import com.example.checkers.server.IPlayable;
+import com.example.checkers.server.Square;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
@@ -15,7 +18,6 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -26,7 +28,7 @@ public class UIBoardController extends Controller{
     @FXML
     public GridPane gridPane;
     public IPlayable server;
-    public Client.Color user;
+    public Properties.Color user;
     public Stage stage;
     @FXML
     public Button leaveButton;
@@ -43,7 +45,7 @@ public class UIBoardController extends Controller{
             Node source = (Node) event.getSource();
             Stage stage = (Stage) source.getScene().getWindow();
             try {
-                server.finishGame(getColor(stage)==Client.Color.RED? Client.Color.BLUE: Client.Color.RED);
+                server.finishGame(getColor(stage)== Properties.Color.RED? Properties.Color.BLUE: Properties.Color.RED);
             } catch (RemoteException e) {
                 showError("Game already finished!", "ERROR");
             }
@@ -87,7 +89,7 @@ public class UIBoardController extends Controller{
         selected = null;
         gridPane.getChildren().clear();
         for (Square square : board.getField()) {
-            square.setStyle(square.getColor() == Client.Color.WHITE ? "-fx-background-color: white" : "-fx-background-color: black;");
+            square.setStyle(square.getColor() == Properties.Color.WHITE ? "-fx-background-color: white" : "-fx-background-color: black;");
             if (square.getChecker() != null) setChecker(square);
             else
                 square.setOnMouseClicked(event -> {
@@ -109,7 +111,7 @@ public class UIBoardController extends Controller{
         if(!server.performMove(from, to)){drawField(server.getBoard());}
     }
 
-    private void endGame(Client.Color winner) {
+    private void endGame(Properties.Color winner) {
         Platform.runLater(() -> {
             try {
                 drawField(server.getBoard());
@@ -123,7 +125,10 @@ public class UIBoardController extends Controller{
     private void setChecker(Square square){
         Checker checker = new Checker(square.getRow(), square.getColumn());
         checker.setRadius(30);
-        checker.setFill(square.getChecker()==Client.Color.RED?Color.RED:Color.BLUE);
+        Color color = square.getType()== Properties.Type.MAN?
+                (Properties.Color.RED==square.getChecker()? Color.RED:Color.BLUE):
+                (square.getChecker()== Properties.Color.RED? Color.DARKRED:Color.DARKBLUE);
+        checker.setFill(color);
 
         checker.setOnMouseClicked(event -> {
             try {

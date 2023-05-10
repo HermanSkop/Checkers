@@ -1,10 +1,9 @@
 package com.example.checkers;
 
-import com.example.checkers.client.Client;
+import com.example.checkers.client.Properties;
 import com.example.checkers.client.UIBoardController;
 import com.example.checkers.server.IPlayable;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -23,7 +22,7 @@ public class ConnectController extends Controller{
     public Button connectButton;
 
     public void onConnectButton() {
-        Client.Color host;
+        Properties.Color host;
         try {
             Registry reg = LocateRegistry.getRegistry(address.getText(), Integer.parseInt(port.getText()));
             IPlayable server = (IPlayable) reg.lookup("IPlayable");
@@ -37,9 +36,9 @@ public class ConnectController extends Controller{
             FXMLLoader fxmlLoader = new FXMLLoader(CreateApplication.class.getResource("pages/board.fxml"));
 
             Scene scene = new Scene(fxmlLoader.load(), 650, 650);
-            stage.setTitle("Your color: " + (host==Client.Color.RED?Client.Color.BLUE:Client.Color.RED) + " | IP: "
+            stage.setTitle("Your color: " + (host== Properties.Color.RED? Properties.Color.BLUE: Properties.Color.RED) + " | IP: "
                     + address.getText() + " | port:" + port.getText());
-            stage.setUserData(host==Client.Color.RED?Client.Color.BLUE.toString():Client.Color.RED.toString());
+            stage.setUserData(host== Properties.Color.RED? Properties.Color.BLUE.toString(): Properties.Color.RED.toString());
             stage.setResizable(false);
             stage.setScene(scene);
 
